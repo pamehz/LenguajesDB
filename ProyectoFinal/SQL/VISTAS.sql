@@ -96,3 +96,64 @@ FROM
     CLIENTE
 WHERE
     MONTHS_BETWEEN(SYSDATE, Fecha_Nacimiento) < 216; -- Menor a 18 años (216 meses)
+
+CREATE OR REPLACE FUNCTION FN_CantidadLibrosPorAutor (
+    p_IdAutor INT
+) RETURN INT AS
+    v_CantidadLibros INT;
+BEGIN
+    SELECT COUNT(l.ID_Libro)
+    INTO v_CantidadLibros
+    FROM LIBRO l
+    JOIN GENERO g ON l.ID_Genero = g.ID_Genero
+    WHERE g.ID_Autor = p_IdAutor;
+
+    RETURN v_CantidadLibros;
+END;
+
+CREATE OR REPLACE FUNCTION FN_PromedioEdadClientes RETURN NUMBER AS
+    v_PromedioEdad NUMBER;
+BEGIN
+    SELECT AVG(MONTHS_BETWEEN(SYSDATE, Fecha_Nacimiento) / 12)
+    INTO v_PromedioEdad
+    FROM CLIENTE;
+
+    RETURN v_PromedioEdad;
+END;
+
+CREATE OR REPLACE FUNCTION FN_ObtenerLibroMasReciente RETURN VARCHAR2 AS
+    v_LibroMasReciente VARCHAR2(90);
+BEGIN
+    SELECT Titulo_Libro
+    INTO v_LibroMasReciente
+    FROM LIBRO
+    WHERE Fecha_Publicacion = (SELECT MAX(Fecha_Publicacion) FROM LIBRO);
+
+    RETURN v_LibroMasReciente;
+END;
+
+CREATE OR REPLACE FUNCTION FN_ExistenReservasCliente (
+    p_CedulaCliente INT
+) RETURN BOOLEAN AS
+    v_ExistenReservas BOOLEAN;
+BEGIN
+    SELECT COUNT(*)
+    INTO v_ExistenReservas
+    FROM RESERVA
+    WHERE ID_Libro IN (SELECT ID_Libro FROM LIBRO WHERE ID_Genero IN (SELECT ID_Genero FROM GENERO WHERE ID_Autor = p_CedulaCliente));
+
+    RETURN v_ExistenReservas > 0;
+END;
+
+CREATE OR REPLACE FUNCTION FN_ListarLibrosPorGenero (
+    p_IdGenero INT
+) RETURN SYS_REFCURSOR AS
+    v_Cursor SYS_REFCURSOR;
+BEGIN
+    OPEN v_Cursor FOR
+    SELECT Titulo_Libro
+    FROM LIBRO
+    WHERE ID_Genero = p_IdGenero;
+
+    RETURN v_Cursor;
+END;
