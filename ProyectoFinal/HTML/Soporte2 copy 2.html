@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en"> 
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel='stylesheet' href='css/bootstrap.min.css'>
+    <link rel='stylesheet' href='css/estilos.css'>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Staatliches&display=swap" rel="stylesheet">
+    <title>Document</title>
+</head>
+
+<h1 style="color: white;">Ferretería AW</h1><br>
+
+<body class="bg-primary bg-opacity-25">
+
+    <main class="contenedor">
+        <div class="nav-bg">
+            <nav class="navegacion">
+
+                <a class="navegacion__enlace navegacion__enlace--activo" href="index.html">Inicio |</a>
+                <a class="navegacion__enlace" href="category.html">Categorías</a>
+                <a class="navegacion__enlace" href="ingreso.html">| Ingresar</a>
+                <a class="navegacion__enlace" href="Soporte2.html">| Soporte</a>
+
+            </nav>
+        </div><br>
+        <h1 style="color: white;">Soporte / Prueba</h1>
+        <center>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+                integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+                crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+                <i class="fa-solid fa-gear fa-5x" style="color: #000000;"></i>
+        </center>
+    </main>
+    <main>
+         <section>
+            <div class="d-flex flex-column min-vh-100 justify-content-center">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-10 mx-auto bg-white rounded shadow">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="m-5 text-center">
+                                        <h1>Welcome!</h1>
+                                    </div>
+
+                                    <form action = "procesar-formulario.php" class="m-5" method="POST">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="nombre">Nombre Completo</label>
+                                            <input class="form-control" type="text" name="nombre-completo" id="nombre" placeholder="Digita su nombre"/>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="correo">Correo</label>
+                                            <input class="form-control" type="email" name="correo" id="correo" placeholder="Digita su correo electrónico"/>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="issue">Problema presentado</label>
+                                            <input class="form-control" type="text" name="issue" id="issue" placeholder="Describa el problema experimentado"/>
+                                        </div>
+                                        <div class="row mb-3">
+                                        <center><div class="col-6">
+                                                <h3>Desea ser contactado por:</h3>
+                                                <div class="form-check text-start">
+                                                    <input class="form-check-input" type="checkbox" name = "contactos[]" id="check1" value="Vía email"/>
+                                                    <label class="form-check-label" for="check1">Vía email</label>
+                                                </div>
+                                                <div class="form-check text-start">
+                                                    <input class="form-check-input" type="checkbox" name = "contactos[]" id="check2" value="Vía llamada telefónica"/>
+                                                    <label class="form-check-label" for="check2">Vía llamada telefónica</label>
+                                                </div>
+                                                <div class="form-check text-start">
+                                                    <input class="form-check-input" type="checkbox" name = "contactos[]" id="check3" value="Vía Whatsapp"/>
+                                                    <label class="form-check-label" for="check3">Vía Whatsapp</label>
+                                                </div>
+                                                <div class="form-check text-start">
+                                                    <input class="form-check-input" type="checkbox" name = "contactos[]" id="check3" value="Vía Whatsapp"/>
+                                                    <label class="form-check-label" for="check4">No deseo soporte, deseo sólo hacer el reporte</label>
+                                                </div>
+                                            </div></center>
+                                        </div>
+                                        <br>
+
+                                        <div>
+                                            <h3>Fecha de la cita:</h3>
+                                            <center><input type="date" name="fecha" id="fecha"></center>
+                                        </div> <br><br>
+
+                                        <div class="centrar">
+                                            <center><button type="submit">Confirmar información</button></center>
+                                        </div>
+                                        <br>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <div>
+                                        <img src="imagenes/welcome.png" alt="login" class="img-fluid p-5" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    <script src="java.js/validacion copy.js"></script>
+</body>
+
+</html>

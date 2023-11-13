@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en"> 
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel='stylesheet' href='css/bootstrap.min.css'>
+    <link rel='stylesheet' href='css/estilos.css'>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Staatliches&display=swap" rel="stylesheet">
+    <title>Document</title>
+</head>
+
+<h1 style="color: white;">Librería LBD</h1><br>
+
+<body class="bg-primary bg-opacity-25">
+
+    <main class="contenedor">
+        <div class="nav-bg">
+            <nav class="navegacion">
+
+                <a class="navegacion__enlace navegacion__enlace--activo" href="index.html">Inicio |</a>
+                <a class="navegacion__enlace" href="category.html">Categorías</a>
+                <a class="navegacion__enlace" href="newform copy.html">| Ingresar</a>
+                <a class="navegacion__enlace" href="Soporte2.html">| Búsqueda de Libros</a>
+                <a class="navegacion__enlace" href="procesar-form3.php">| Calendario de Actividades</a>
+
+            </nav>
+        </div><br>
+        <h1 style="color: white;">Búsqueda de Libros <i class="fa-solid fa-gears fa-spin-pulse fa-1x" style="color: #000000;"></i></h1>
+        <center>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+                integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+                crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+                
+        </center>
+    </main>
+    <main>
+         <section>
+            <div class="d-flex flex-column min-vh-100 justify-content-center">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-10 mx-auto bg-white rounded shadow">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="m-5 text-center">
+                                        <h1>Bienvenido!</h1>
+                                    </div>
+
+                                    <form action = "procesar-formulario.php" class="m-5" method="POST">
+                                        <div class="mb-3">
+                                            <label class="form-label" for="nombre">Nombre del libro</label>
+                                            <input class="form-control" type="text" name="nombre-completo" id="nombre" placeholder="Digite el nombre del libro que desea buscar"/>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="correo">Correo electrónico</label>
+                                            <input class="form-control" type="email" name="correo" id="correo" placeholder="Digite su correo electrónico"/>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="issue">Autor del libro</label>
+                                            <input class="form-control" type="text" name="issue" id="issue" placeholder="Digite el nombre del autor del libro que desea buscar"/>
+                                        </div>
+                                        <div class="row mb-3">
+                                        <center><div class="col-6">
+                                                <h3>Categoría del libro en cuestión:</h3>
+                                                <div class="form-check text-start">
+                                                    <input class="form-check-input" type="checkbox" name = "contactos[]" id="check1" value="Vía email"/>
+                                                    <label class="form-check-label" for="check1">Misterio</label>
+                                                </div>
+                                                <div class="form-check text-start">
+                                                    <input class="form-check-input" type="checkbox" name = "contactos[]" id="check2" value="Vía llamada telefónica"/>
+                                                    <label class="form-check-label" for="check2">Fantástico</label>
+                                                </div>
+                                                <div class="form-check text-start">
+                                                    <input class="form-check-input" type="checkbox" name = "contactos[]" id="check3" value="Vía Whatsapp"/>
+                                                    <label class="form-check-label" for="check3">Historico</label>
+                                                </div>
+                                                <div class="form-check text-start">
+                                                    <input class="form-check-input" type="checkbox" name = "contactos[]" id="check3" value="Vía Whatsapp"/>
+                                                    <label class="form-check-label" for="check4">Educativo</label>
+                                                </div>
+                                            </div></center>
+                                        </div>
+                                        <br>
+
+                                        <div>
+                                            <h3>Fecha de publicación:</h3>
+                                            <center><input type="date" name="fecha" id="fecha"></center>
+                                        </div> <br><br>
+
+                                        <div class="centrar">
+                                            <center><button type="submit">Confirmar información</button></center>
+                                        </div>
+                                        <br>
+                                    </form>
+                                </div>
+                                <div class="col-md-6">
+                                    <div>
+                                        <img src="imagenes/welcome.png" alt="login" class="img-fluid p-5" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    <script src="java.js/validacion copy.js"></script>
+</body>
+
+</html>

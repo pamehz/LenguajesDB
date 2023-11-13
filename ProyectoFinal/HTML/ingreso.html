@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/estilos.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Staatliches&display=swap" rel="stylesheet">
+    <title>Document</title>
+</head>
+<h1 style="color: white;">Librería LBD</h1>
+<body>
+
+    <main class="contenedor">
+        <div class="nav-bg">
+            <nav class="navegacion">
+
+                <a class="navegacion__enlace navegacion__enlace--activo" href="index.html">Inicio |</a>
+                <a class="navegacion__enlace" href="category.html">Categorías</a>
+                <a class="navegacion__enlace" href="newform copy.html">| Ingresar</a>
+                <a class="navegacion__enlace" href="Soporte2.html">| Búsqueda de Libros</a>
+                <a class="navegacion__enlace" href="procesar-form3.php">| Calendario de Actividades</a>
+
+            </nav>
+        </div>
+        <h1 style="color: white;">Inicio de Sesión</h1>
+        <center>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+                integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+                crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+                <i class="fa-solid fa-user fa-5x" style="color: #000000;"></i>
+        </center>
+
+    </main>
+
+    <h1>Complete la información a continuación</h1>
+    <main class="contenedor2">
+
+        <div class="seccion" style="background-color: #07A8A8; color: white;">
+            <center>
+                <i class="fa-solid fa-lock fa-3x" style="color: #000000;"></i><br>
+                <form class="formulario" id="validacion">
+                    <div class="campo">
+                        <label for="nombre">Nombre o ID de empleado</label>
+                        <input type="text" id="nombre" placeholder="Nombre/User">
+                    </div>
+                    <div class="campo">
+                        <label for="telefono">Contraseña</label>
+                        <input type="text" id="password" placeholder="Password">
+                    </div>
+                    <div class="campo">
+                        <label for="email">Correo electrónico</label>
+                        <input class="texto" type="email" id="email" placeholder="Email">
+                    </div>
+                    <div class="centrar">
+                        <center><button class="boton2">Enviar</button></center>
+                    </div>
+                    <br>
+                    <center>
+                        <div id="advertencia" style="display: none; text-align: center;"></div>
+                    </center </form>
+            </center>
+        </div>
+
+    </main>  
+    <br>
+    <center>
+        <script src="java.js/validacion.js"></script>
+    </center>     
+</body>
+<footer class="footer" >
+    <p class="footer__texto">SC-504 Lenguage de Bases de Datos - Todos los
+        derechos Reservados 2023.</p>
+</footer>
+</html>

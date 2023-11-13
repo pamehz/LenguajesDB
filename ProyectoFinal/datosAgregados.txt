@@ -1,0 +1,16 @@
+
+Francisco,Hernande24@gmail.com,Bugs y no sirve,[Vía email;Vía llamada telefónica;Vía Whatsapp;]
+Francisco,Hernande24@gmail.com,Bugs y no sirve,["V\u00eda email","V\u00eda llamada telef\u00f3nica","V\u00eda Whatsapp"]
+Francisco,Hernande24@gmail.com,Bugs y no sirve,["V\u00eda email","V\u00eda llamada telef\u00f3nica","V\u00eda Whatsapp"]
+Francisco,Hernande24@gmail.com,Bugs y no sirve,["V\u00eda email","V\u00eda llamada telef\u00f3nica","V\u00eda Whatsapp"]
+,,,null
+
+Francisco,123quesito@hotmail.com,Bugs,["V\u00eda Whatsapp"]
+Francisco,borrador@hotmail.com,Bugs,["V\u00eda email","V\u00eda llamada telef\u00f3nica","V\u00eda Whatsapp"]
+Francisco,borrador@hotmail.com,Bugs,["V\u00eda email","V\u00eda llamada telef\u00f3nica","V\u00eda Whatsapp"]
+Francisco,fran@hotmail.com,Bugs,["V\u00eda email","V\u00eda llamada telef\u00f3nica","V\u00eda Whatsapp"]
+Francisco Hdez,franhdez123@gmail.com,Password incorrecta,["V\u00eda email","V\u00eda Whatsapp"]
+Francisco,1234@gmail.com,Fallos,["V\u00eda email","V\u00eda llamada telef\u00f3nica"]
+Francisco,12345@gmail.com,Bugs,["V\u00eda email","V\u00eda llamada telef\u00f3nica"]
+Francisco,1234@gmail.com,Fallos,["V\u00eda email","V\u00eda Whatsapp"]
+,,,["V\u00eda email"]
