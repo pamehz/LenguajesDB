@@ -47,3 +47,52 @@ JOIN
 JOIN
     LIBRO L ON C.ID_Reserva = R.ID_Reserva;
 SELECT * FROM V_ReservasPorCliente;
+
+CREATE OR REPLACE VIEW V_LibrosPorIdioma AS
+SELECT
+    li.ID_Libro,
+    l.Titulo_Libro,
+    i.Nombre_Idioma
+FROM
+    LIBRO_IDIOMA li
+JOIN
+    LIBRO l ON li.ID_Libro = l.ID_Libro
+JOIN
+    IDIOMA i ON li.ID_Idioma = i.ID_Idioma;
+
+CREATE OR REPLACE VIEW V_AutoresPorNacionalidad AS
+SELECT
+    a.ID_Autor,
+    a.Nombre_Autor,
+    a.Apellido1_Autor,
+    a.Apellido2_Autor,
+    n.Nacionalidad
+FROM
+    AUTOR a
+JOIN
+    AUTOR_NACIONALIDAD an ON a.ID_Autor = an.ID_Autor
+JOIN
+    NACIONALIDAD n ON an.ID_Nacionalidad = n.ID_Nacionalidad;
+
+CREATE OR REPLACE VIEW V_ResumenGeneros AS
+SELECT
+    g.Nombre_Genero,
+    COUNT(l.ID_Libro) AS CantidadLibros
+FROM
+    GENERO g
+LEFT JOIN
+    LIBRO l ON g.ID_Genero = l.ID_Genero
+GROUP BY
+    g.Nombre_Genero;
+
+CREATE OR REPLACE VIEW V_ClientesMenoresEdad AS
+SELECT
+    Cedula_Cliente,
+    Nombre_Cliente,
+    Apellido_Paterno,
+    Apellido_Materno,
+    Fecha_Nacimiento
+FROM
+    CLIENTE
+WHERE
+    MONTHS_BETWEEN(SYSDATE, Fecha_Nacimiento) < 216; -- Menor a 18 años (216 meses)
