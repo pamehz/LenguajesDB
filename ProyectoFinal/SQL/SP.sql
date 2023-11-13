@@ -145,3 +145,142 @@ BEGIN
     WHERE UPPER(Titulo_Libro) LIKE UPPER('%'||p_TituloLibro||'%');
 END;
 
+
+
+//Procedimiento para insertar autor nuevo
+
+
+create or replace NONEDITIONABLE PROCEDURE SP_InsertarAutor(
+    p_nombre_autor varchar2,
+    p_apellido1_autor varchar2,
+    p_apellido2_autor varchar2,
+    p_genero_autor varchar2,
+    p_correoelectronico_autor varchar2,
+    p_id_nacionalidad NUMBER
+)
+AS
+BEGIN
+    INSERT INTO AUTOR (
+        nombre_autor,
+        apellido1_autor,
+        apellido2_autor,
+        genero_autor,
+        correoelectronico_autor,
+        id_nacionalidad
+    )
+    VALUES (
+        p_nombre_autor,
+        p_apellido1_autor,
+        p_apellido2_autor,
+        p_genero_autor,
+        p_correoelectronico_autor,
+        p_id_nacionalidad
+    );
+END ;
+
+EXEC SP_InsertarAutor('Johan','Solis','Lopez','Masculino','johan.solis.lopez@hotmail.com',1)
+
+
+
+//Actualizar libro 
+
+CREATE OR REPLACE PROCEDURE SP_ActualizarLibro(
+    p_id_libro IN NUMBER,
+    p_titulo_libro IN VARCHAR2,
+    p_apellido1_autor IN VARCHAR2,
+    p_fecha_publicacion IN DATE,
+    p_numero_copias IN NUMBER,
+    p_id_idioma IN NUMBER,
+    p_id_genero IN NUMBER
+)
+IS
+BEGIN
+    UPDATE LIBRO
+    SET
+        titulo_libro = p_titulo_libro,
+        apellido1_autor = p_apellido1_autor,
+        fecha_publicacion = p_fecha_publicacion,
+        numero_copias = p_numero_copias,
+        id_idioma = p_id_idioma,
+        id_genero = p_id_genero
+    WHERE id_libro = p_id_libro;
+    COMMIT;
+END;
+
+EXECUTE SP_ActualizarLibro(1,  'Nuevo Título', 'Nuevo Autor',  TO_DATE('2023-01-01', 'YYYY-MM-DD'),10, 2,3 );
+
+
+
+//ELIMINAR RESERVA 
+
+CREATE OR REPLACE PROCEDURE SP_EliminarReserva(
+    p_id_reserva IN NUMBER
+)
+IS
+BEGIN
+    DELETE FROM RESERVA WHERE id_reserva = p_id_reserva;
+    COMMIT;
+END;
+
+EXECUTE SP_EliminarReserva(1);
+
+
+
+//LISTAR LOS LIBROS POR GENERO
+CREATE OR REPLACE PROCEDURE SP_ListarLibrosPorGenero(
+    p_nombre_genero IN VARCHAR2
+)
+IS
+BEGIN
+    FOR libro_rec IN (SELECT * FROM LIBRO WHERE id_genero = (SELECT id_genero FROM GENERO WHERE nombre_genero = p_nombre_genero))
+    LOOP
+        DBMS_OUTPUT.PUT_LINE('ID Libro: ' || libro_rec.id_libro || ', Título: ' || libro_rec.titulo_libro);
+    END LOOP;
+END;
+
+EXECUTE SP_ListarLibrosPorGenero('Ciencia Ficción');
+
+//Obtener clientes por edad 
+
+
+CREATE OR REPLACE PROCEDURE SP_ObtenerClientesPorEdad(
+    p_edad NUMBER
+)
+IS
+BEGIN
+    FOR cliente_bucle IN (SELECT * FROM CLIENTE WHERE edad = p_edad)
+    LOOP
+        DBMS_OUTPUT.PUT_LINE('ID Cliente: ' || cliente_bucle.id_cliente || ', Nombre: ' || cliente_bucle.nombre_cliente);
+    END LOOP;
+END;
+
+// Contar libros por GENERO 
+CREATE OR REPLACE PROCEDURE SP_ContarLibrosPorGenero
+IS
+BEGIN
+    FOR genero_rec IN (SELECT g.nombre_genero, COUNT(l.id_libro) as cantidad_libros
+                       FROM GENERO g
+                       LEFT JOIN LIBRO l ON g.id_genero = l.id_genero
+                       GROUP BY g.nombre_genero)
+    LOOP
+        DBMS_OUTPUT.PUT_LINE('Género: ' || genero_rec.nombre_genero || ', Cantidad de Libros: ' || genero_rec.cantidad_libros);
+    END LOOP;
+END;
+
+//Buscar autor por nacionalidad
+
+CREATE OR REPLACE PROCEDURE SP_BuscarAutorPorNacionalidad(
+    p_nacionalidad IN VARCHAR2
+)
+IS
+BEGIN
+    FOR autor_rec IN (SELECT *
+                      FROM AUTOR
+                      WHERE id_nacionalidad = (SELECT id_nacionalidad FROM NACIONALIDAD WHERE nacionalidad = p_nacionalidad))
+    LOOP
+        -- Puedes hacer lo que quieras con los resultados, por ejemplo, imprimir información
+        DBMS_OUTPUT.PUT_LINE('ID Autor: ' || autor_rec.id_autor || ', Apellido: ' || autor_rec.apellido1_autor);
+    END LOOP;
+END;
+
+EXECUTE SP_BuscarAutorPorNacionalidad('Española');
