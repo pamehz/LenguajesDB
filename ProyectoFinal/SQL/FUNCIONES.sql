@@ -124,3 +124,59 @@ BEGIN
 
     RETURN v_Cursor;
 END;
+
+
+
+//Funcion para contar los libros por genero
+
+CREATE OR REPLACE FUNCTION ContarLibrosPorGenero( 
+    p_nombre_genero VARCHAR2)
+RETURN NUMBER
+AS
+    cantidad_libros NUMBER;
+BEGIN
+    SELECT COUNT(*)
+    INTO cantidad_libros
+    FROM LIBRO
+    WHERE id_genero = (SELECT id_genero FROM GENERO WHERE nombre_genero = p_nombre_genero);
+    RETURN cantidad_libros;
+END;
+
+//Funcion para obtener nacionalidad del autor 
+CREATE OR REPLACE FUNCTION ObtenerNacionalidadAutor(
+    p_id_autor NUMBER
+)
+RETURN VARCHAR2
+AS
+    nacionalidad_autor VARCHAR2(50);
+BEGIN
+    SELECT nacionalidad
+    INTO nacionalidad_autor
+    FROM NACIONALIDAD
+    WHERE id_nacionalidad = (SELECT id_nacionalidad FROM AUTOR WHERE id_autor = p_id_autor);
+    RETURN nacionalidad_autor;
+END;
+
+
+
+//Funcion IdiomaLibro
+CREATE OR REPLACE FUNCTION IdiomaLibro(
+    p_id_libro NUMBER
+)
+RETURN VARCHAR2
+AS
+    idioma_libro VARCHAR2(50);
+BEGIN
+    SELECT nombre_idioma
+    INTO idioma_libro
+    FROM Idioma
+    WHERE id_idioma = (SELECT id_idioma FROM Libro_Idioma WHERE id_libro = p_id_libro AND ROWNUM = 1);
+
+    RETURN idioma_libro;
+END;
+
+
+
+
+
+
