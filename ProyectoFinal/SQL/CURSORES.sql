@@ -92,3 +92,57 @@ BEGIN
 END;
 
 EXEC CUR_ClientesPorEdad;
+
+CREATE OR REPLACE PROCEDURE CUR_LibrosPorGenero (
+    p_IdGenero INT,
+    p_Cursor OUT SYS_REFCURSOR
+) AS
+BEGIN
+    OPEN p_Cursor FOR
+    SELECT Titulo_Libro
+    FROM LIBRO
+    WHERE ID_Genero = p_IdGenero;
+END CUR_LibrosPorGenero;
+
+CREATE OR REPLACE PROCEDURE CUR_AutoresNacionalidad (
+    p_Cursor OUT SYS_REFCURSOR
+) AS
+BEGIN
+    OPEN p_Cursor FOR
+    SELECT a.ID_Autor, a.Nombre_Autor, a.Apellido1_Autor, a.Apellido2_Autor, n.Nacionalidad
+    FROM AUTOR a
+    JOIN AUTOR_NACIONALIDAD an ON a.ID_Autor = an.ID_Autor
+    JOIN NACIONALIDAD n ON an.ID_Nacionalidad = n.ID_Nacionalidad;
+END CUR_AutoresNacionalidad;
+
+CREATE OR REPLACE PROCEDURE CUR_LibrosDisponibles (
+    p_Cursor OUT SYS_REFCURSOR
+) AS
+BEGIN
+    OPEN p_Cursor FOR
+    SELECT Titulo_Libro
+    FROM LIBRO
+    WHERE Numero_Copias > 0;
+END CUR_LibrosDisponibles;
+
+CREATE OR REPLACE PROCEDURE CUR_GenerosLiterarios (
+    p_Cursor OUT SYS_REFCURSOR
+) AS
+BEGIN
+    OPEN p_Cursor FOR
+    SELECT DISTINCT Nombre_Genero
+    FROM GENERO;
+END CUR_GenerosLiterarios;
+
+CREATE OR REPLACE PROCEDURE CUR_AutoresMasProductivos (
+    p_Cursor OUT SYS_REFCURSOR
+) AS
+BEGIN
+    OPEN p_Cursor FOR
+    SELECT a.ID_Autor, a.Nombre_Autor, a.Apellido1_Autor, a.Apellido2_Autor, COUNT(l.ID_Libro) AS CantidadLibros
+    FROM AUTOR a
+    JOIN GENERO g ON a.ID_Autor = g.ID_Autor
+    JOIN LIBRO l ON g.ID_Genero = l.ID_Genero
+    GROUP BY a.ID_Autor, a.Nombre_Autor, a.Apellido1_Autor, a.Apellido2_Autor
+    ORDER BY CantidadLibros DESC;
+END CUR_AutoresMasProductivos;
