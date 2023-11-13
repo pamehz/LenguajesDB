@@ -176,6 +176,39 @@ BEGIN
 END;
 
 
+//Obtener Libros por autor
+CREATE OR REPLACE FUNCTION FN_ObtenerLibrosPorAutor
+(
+    p_AutorID IN NUMBER
+)
+RETURN SYS_REFCURSOR
+AS
+    v_Cursor SYS_REFCURSOR;
+BEGIN
+    OPEN v_Cursor FOR
+    SELECT id_libro, titulo_libro, fecha_publicacion
+    FROM LIBRO
+    WHERE autor_id = p_AutorID;
+
+    RETURN v_Cursor;
+END;
+
+//OBTENER LIBROS POR FECHA DE PUBLICACION
+
+CREATE OR REPLACE FUNCTION FN_ObtenerLibrosPorFechaPublicacion
+(
+    p_FechaDesde IN DATE,
+    p_FechaHasta IN DATE
+)
+RETURN SYS_REFCURSOR
+AS
+    v_Cursor SYS_REFCURSOR;
+    OPEN v_Cursor FOR
+    SELECT id_libro, titulo_libro, fecha_publicacion
+    FROM LIBRO
+    WHERE fecha_publicacion BETWEEN p_FechaDesde AND p_FechaHasta;
+    RETURN v_Cursor;
+END;
 
 
 
