@@ -66,4 +66,82 @@ BEGIN
 END;
 EXEC SP_EliminarLibro(1);
 
+CREATE OR REPLACE PROCEDURE SP_ActualizarTelefonoCliente (
+    p_CedulaCliente IN INT,
+    p_NuevoTelefono IN INT
+) AS
+BEGIN
+    UPDATE TELEFONO
+    SET Numero_Telefono = p_NuevoTelefono
+    WHERE Cedula_Cliente = p_CedulaCliente;
+    COMMIT;
+END;
+
+CREATE OR REPLACE PROCEDURE SP_ListarReservasPorFecha (
+    p_FechaReserva IN DATE
+) AS
+BEGIN
+    SELECT *
+    FROM RESERVA
+    WHERE Fecha_Reserva = p_FechaReserva;
+END;
+
+CREATE OR REPLACE PROCEDURE SP_ObtenerLibrosPorIdioma (
+    p_IdIdioma IN INT
+) AS
+BEGIN
+    SELECT l.*
+    FROM LIBRO l
+    JOIN LIBRO_IDIOMA li ON l.ID_Libro = li.ID_Libro
+    WHERE li.ID_Idioma = p_IdIdioma;
+END;
+
+CREATE OR REPLACE PROCEDURE SP_EliminarCliente (
+    p_CedulaCliente IN INT
+) AS
+BEGIN
+    DELETE FROM TELEFONO WHERE Cedula_Cliente = p_CedulaCliente;
+    DELETE FROM CORREO WHERE Cedula_Cliente = p_CedulaCliente;
+    DELETE FROM DIRECCION WHERE Cedula_Cliente = p_CedulaCliente;
+    DELETE FROM CLIENTE WHERE Cedula_Cliente = p_CedulaCliente;
+    COMMIT;
+END;
+
+CREATE OR REPLACE PROCEDURE SP_ObtenerReservasCliente (
+    p_CedulaCliente IN INT
+) AS
+BEGIN
+    SELECT *
+    FROM RESERVA
+    WHERE ID_Libro IN (SELECT ID_Libro FROM LIBRO WHERE ID_Genero IN (SELECT ID_Genero FROM GENERO WHERE ID_Autor = p_CedulaCliente));
+END;
+
+CREATE OR REPLACE PROCEDURE SP_ActualizarDireccionCliente (
+    p_CedulaCliente IN INT,
+    p_NuevaDireccion IN VARCHAR2
+) AS
+BEGIN
+    UPDATE DIRECCION
+    SET Direccion = p_NuevaDireccion
+    WHERE Cedula_Cliente = p_CedulaCliente;
+    COMMIT;
+END;
+
+CREATE OR REPLACE PROCEDURE SP_ListarAutoresPorGenero (
+    p_IdGenero IN INT
+) AS
+BEGIN
+    SELECT a.*
+    FROM AUTOR a
+    WHERE a.ID_Autor IN (SELECT ID_Autor FROM GENERO WHERE ID_Genero = p_IdGenero);
+END;
+
+CREATE OR REPLACE PROCEDURE SP_BuscarLibrosPorTitulo (
+    p_TituloLibro IN VARCHAR2
+) AS
+BEGIN
+    SELECT *
+    FROM LIBRO
+    WHERE UPPER(Titulo_Libro) LIKE UPPER('%'||p_TituloLibro||'%');
+END;
 
