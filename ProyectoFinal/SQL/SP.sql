@@ -284,3 +284,27 @@ BEGIN
 END;
 
 EXECUTE SP_BuscarAutorPorNacionalidad('Española');
+
+//MOSTRAR INFORMACION DEL LIBRO
+
+CREATE OR REPLACE PROCEDURE SP_MostrarInfoLibro
+(
+    p_LibroID IN NUMBER
+)
+AS
+    v_TituloLibro VARCHAR2(100);
+    v_ApellidoAutor VARCHAR2(50);
+    v_FechaPublicacion DATE;
+    v_NumeroCopias NUMBER;
+BEGIN
+    SELECT titulo_libro, apellido1_autor, fecha_publicacion, numero_copias
+    INTO v_TituloLibro, v_ApellidoAutor, v_FechaPublicacion, v_NumeroCopias
+    FROM LIBRO
+    WHERE id_libro = p_LibroID;
+
+    DBMS_OUTPUT.PUT_LINE('ID del Libro: ' || p_LibroID);
+    DBMS_OUTPUT.PUT_LINE('Título del Libro: ' || v_TituloLibro);
+    DBMS_OUTPUT.PUT_LINE('Apellido del Autor: ' || v_ApellidoAutor);
+    DBMS_OUTPUT.PUT_LINE('Fecha de Publicación: ' || TO_CHAR(v_FechaPublicacion, 'DD-MON-YYYY'));
+    DBMS_OUTPUT.PUT_LINE('Número de Copias: ' || v_NumeroCopias);
+END;
