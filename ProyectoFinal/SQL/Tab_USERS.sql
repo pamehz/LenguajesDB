@@ -1,16 +1,1 @@
-CREATE TABLE Tab_USERS (
-    id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    nombre VARCHAR2(100),
-    correo VARCHAR2(100),
-    contrasenna VARCHAR2(100)
-);
-
-CREATE TABLE Tab_AUDITORIA_USERS (
-    id NUMBER GENERATED ALWAYS AS IDENTITY,
-    evento VARCHAR2(100),
-    fecha_registro TIMESTAMP,
-    nombre_usuario VARCHAR2(100),
-    correo VARCHAR2(100),
-    contrasenna VARCHAR2(100)
-);
 
