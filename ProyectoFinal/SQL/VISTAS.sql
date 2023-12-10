@@ -95,6 +95,26 @@ SELECT
 FROM
     CLIENTE
 WHERE
-    MONTHS_BETWEEN(SYSDATE, Fecha_Nacimiento) < 216; -- Menor a 18 años (216 meses)
+    MONTHS_BETWEEN(SYSDATE, Fecha_Nacimiento) < 216; 
+
+CREATE OR REPLACE VIEW V_ListaLibrosDisponibles AS
+SELECT *
+FROM LIBRO
+WHERE Numero_Copias > 0;
+
+CREATE OR REPLACE VIEW V_ReservasPendientes AS
+SELECT *
+FROM RESERVA
+WHERE Fecha_Reserva > SYSDATE;
+
+CREATE OR REPLACE VIEW V_DetalleCliente AS
+SELECT c.*, r.Fecha_Reserva, t.Numero_Telefono, co.Correo_Electronico, d.Direccion
+FROM CLIENTE c
+LEFT JOIN RESERVA r ON c.ID_Reserva = r.ID_Reserva
+LEFT JOIN TELEFONO t ON c.Cedula_Cliente = t.Cedula_Cliente
+LEFT JOIN CORREO co ON c.Cedula_Cliente = co.Cedula_Cliente
+LEFT JOIN DIRECCION d ON c.Cedula_Cliente = d.Cedula_Cliente;
+
+
 
 
