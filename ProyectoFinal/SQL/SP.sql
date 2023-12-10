@@ -308,3 +308,58 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('Fecha de Publicación: ' || TO_CHAR(v_FechaPublicacion, 'DD-MON-YYYY'));
     DBMS_OUTPUT.PUT_LINE('Número de Copias: ' || v_NumeroCopias);
 END;
+
+CREATE OR REPLACE PROCEDURE SP_ReservarLibro (
+    p_IdReserva INT,
+    p_FechaReserva DATE,
+    p_IdLibro INT,
+    p_CedulaCliente INT
+) AS
+BEGIN
+    INSERT INTO RESERVA (ID_Reserva, Fecha_Reserva, ID_Libro)
+    VALUES (p_IdReserva, p_FechaReserva, p_IdLibro);
+
+    UPDATE CLIENTE
+    SET ID_Reserva = p_IdReserva
+    WHERE Cedula_Cliente = p_CedulaCliente;
+END SP_ReservarLibro;
+
+CREATE OR REPLACE PROCEDURE SP_ListarLibrosDisponibles AS
+BEGIN
+    SELECT *
+    FROM LIBRO
+    WHERE Numero_Copias > 0;
+END SP_ListarLibrosDisponibles;
+
+CREATE OR REPLACE PROCEDURE SP_ObtenerTelefonosCliente (
+    p_CedulaCliente INT
+) AS
+BEGIN
+    SELECT Numero_Telefono
+    FROM TELEFONO
+    WHERE Cedula_Cliente = p_CedulaCliente;
+END SP_ObtenerTelefonosCliente;
+
+CREATE OR REPLACE PROCEDURE SP_ListarLibrosPorFechaPublicacion AS
+BEGIN
+    SELECT *
+    FROM LIBRO
+    ORDER BY Fecha_Publicacion;
+END SP_ListarLibrosPorFechaPublicacion;
+
+CREATE OR REPLACE PROCEDURE SP_GenerarReporteReservas AS
+BEGIN
+    -- Aquí puedes implementar la lógica para generar el informe de reservas
+    NULL;
+END SP_GenerarReporteReservas;
+
+CREATE OR REPLACE PROCEDURE SP_AsignarNacionalidadAutor (
+    p_IdAutor INT,
+    p_IdNacionalidad INT
+) AS
+BEGIN
+    INSERT INTO AUTOR_NACIONALIDAD (ID_Autor, ID_Nacionalidad)
+    VALUES (p_IdAutor, p_IdNacionalidad);
+END SP_AsignarNacionalidadAutor;
+
+
