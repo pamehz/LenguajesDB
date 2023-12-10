@@ -1,51 +1,66 @@
 /*////////////////SP//////////////////////////////////*/
-CREATE OR REPLACE PROCEDURE SP_ListarLibrosPorAutor
-AS
+CREATE OR REPLACE PROCEDURE SP_ListarLibrosPorAutor AS
 BEGIN
-    FOR LibroRecord IN (
-        SELECT 
-            L.ID_Libro, 
-            L.Titulo_Libro, 
-            L.Fecha_Publicacion,
-            A.Nombre_Autor || ' ' || A.Apellido1_Autor || ' ' || A.Apellido2_Autor AS Autor
-        FROM 
-            LIBRO L
-        INNER JOIN 
-            GENERO G ON L.ID_Genero = G.ID_Genero
-        INNER JOIN 
-            AUTOR A ON G.ID_Autor = A.ID_Autor
-        ORDER BY 
-            A.Nombre_Autor, L.Fecha_Publicacion
-    )
-    LOOP
-        DBMS_OUTPUT.PUT_LINE('ID: ' || LibroRecord.ID_Libro || 
-                             ', Titulo: ' || LibroRecord.Titulo_Libro || 
-                             ', Autor: ' || LibroRecord.Autor || 
-                             ', Fecha de Publicacion: ' || TO_CHAR(LibroRecord.Fecha_Publicacion, 'DD-MON-YYYY'));
-    END LOOP;
+    BEGIN
+        FOR LibroRecord IN (
+            SELECT 
+                L.ID_Libro, 
+                L.Titulo_Libro, 
+                L.Fecha_Publicacion,
+                A.Nombre_Autor || ' ' || A.Apellido1_Autor || ' ' || A.Apellido2_Autor AS Autor
+            FROM 
+                LIBRO L
+            INNER JOIN 
+                GENERO G ON L.ID_Genero = G.ID_Genero
+            INNER JOIN 
+                AUTOR A ON G.ID_Autor = A.ID_Autor
+            ORDER BY 
+                A.Nombre_Autor, L.Fecha_Publicacion
+        )
+        LOOP
+            DBMS_OUTPUT.PUT_LINE('ID: ' || LibroRecord.ID_Libro || 
+                                 ', Titulo: ' || LibroRecord.Titulo_Libro || 
+                                 ', Autor: ' || LibroRecord.Autor || 
+                                 ', Fecha de Publicacion: ' || TO_CHAR(LibroRecord.Fecha_Publicacion, 'DD-MON-YYYY'));
+        END LOOP;
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Error inesperado al listar libros: ' || SQLERRM);
+    END;
 END;
 EXEC SP_ListarLibrosPorAutor;
 
-CREATE OR REPLACE PROCEDURE SP_ObtenerNacionalidades
-AS
+CREATE OR REPLACE PROCEDURE SP_ObtenerNacionalidades AS
 BEGIN
-    FOR NacRecord IN (SELECT ID_Nacionalidad, Nacionalidad FROM NACIONALIDAD ORDER BY ID_Nacionalidad)
-    LOOP
-        DBMS_OUTPUT.PUT_LINE('ID Nacionalidad: ' || NacRecord.ID_Nacionalidad || ', Nacionalidad: ' || NacRecord.Nacionalidad);
-    END LOOP;
+    BEGIN
+        FOR NacRecord IN (SELECT ID_Nacionalidad, Nacionalidad FROM NACIONALIDAD ORDER BY ID_Nacionalidad)
+        LOOP
+            DBMS_OUTPUT.PUT_LINE('ID Nacionalidad: ' || NacRecord.ID_Nacionalidad || ', Nacionalidad: ' || NacRecord.Nacionalidad);
+        END LOOP;
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Error inesperado al obtener nacionalidades: ' || SQLERRM);
+    END;
 END;
-
 EXEC SP_ObtenerNacionalidades;
 
 
 CREATE OR REPLACE PROCEDURE SP_EliminarLibro(p_ID_Libro IN INT)
 AS
 BEGIN
-    DELETE FROM LIBRO
-    WHERE ID_Libro = p_ID_Libro;
-    
-    DBMS_OUTPUT.PUT_LINE('Libro eliminado exitosamente.');
+    BEGIN
+        DELETE FROM LIBRO
+        WHERE ID_Libro = p_ID_Libro;
 
+        IF SQL%ROWCOUNT = 0 THEN
+            RAISE_APPLICATION_ERROR(-20001, 'No se encontró ningún libro con el ID especificado.');
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('Libro eliminado exitosamente.');
+        END IF;
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Error al intentar eliminar el libro: ' || SQLERRM);
+    END;
 END;
 EXEC SP_EliminarLibro(1);
 
@@ -55,10 +70,21 @@ CREATE OR REPLACE PROCEDURE SP_ActualizarTelefonoCliente (
     p_NuevoTelefono IN INT
 ) AS
 BEGIN
-    UPDATE TELEFONO
-    SET Numero_Telefono = p_NuevoTelefono
-    WHERE Cedula_Cliente = p_CedulaCliente;
-    COMMIT;
+    BEGIN
+        UPDATE TELEFONO
+        SET Numero_Telefono = p_NuevoTelefono
+        WHERE Cedula_Cliente = p_CedulaCliente;
+
+        IF SQL%ROWCOUNT = 0 THEN
+            RAISE_APPLICATION_ERROR(-20002, 'No se encontró ningún teléfono asociado al cliente especificado.');
+        ELSE
+            COMMIT;
+            DBMS_OUTPUT.PUT_LINE('Teléfono actualizado exitosamente.');
+        END IF;
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Error al intentar actualizar el teléfono: ' || SQLERRM);
+    END;
 END;
 EXEC SP_ActualizarTelefonoCliente(1111, 86225677);
 
@@ -66,15 +92,22 @@ select * from reserva
 CREATE OR REPLACE PROCEDURE SP_ListarReservasPorFecha (
     p_FechaReserva IN DATE
 ) AS
-    v_Resultado RESERVA%ROWTYPE; //almacena resul. consulta
-
+    v_Resultado RESERVA%ROWTYPE; 
 BEGIN
-    SELECT *
-    INTO v_Resultado
-    FROM RESERVA
-    WHERE Fecha_Reserva = p_FechaReserva;
+    BEGIN
+        SELECT *
+        INTO v_Resultado
+        FROM RESERVA
+        WHERE Fecha_Reserva = p_FechaReserva;
 
-    DBMS_OUTPUT.PUT_LINE('ID_Reserva: ' || v_Resultado.ID_Reserva || ', Fecha_Reserva: ' || v_Resultado.Fecha_Reserva || ', ID_Libro: ' || v_Resultado.ID_Libro);
+        DBMS_OUTPUT.PUT_LINE('ID_Reserva: ' || v_Resultado.ID_Reserva || ', Fecha_Reserva: ' || v_Resultado.Fecha_Reserva || ', ID_Libro: ' || v_Resultado.ID_Libro);
+
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            DBMS_OUTPUT.PUT_LINE('No se encontraron reservas para la fecha especificada.');
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+    END;
 END;
 EXEC SP_ListarReservasPorFecha('24/05/20');
 
@@ -83,30 +116,44 @@ CREATE OR REPLACE PROCEDURE SP_ObtenerLibrosPorIdioma (
     p_IdIdioma IN INT
 ) AS
     v_Resultado LIBRO%ROWTYPE;
+
 BEGIN
-    SELECT l.*
-    INTO v_Resultado
-    FROM LIBRO l
-    JOIN LIBRO_IDIOMA i ON l.ID_Libro = i.ID_Libro
-    WHERE i.ID_Idioma = p_IdIdioma;
+    BEGIN
+        SELECT l.*
+        INTO v_Resultado
+        FROM LIBRO l
+        JOIN LIBRO_IDIOMA i ON l.ID_Libro = i.ID_Libro
+        WHERE i.ID_Idioma = p_IdIdioma;
 
-    DBMS_OUTPUT.PUT_LINE('ID_Libro: ' || v_Resultado.ID_Libro || 
-                         ', Titulo: ' || v_Resultado.Titulo_Libro ||
-                         ', Fecha_Publicacion: ' || TO_CHAR(v_Resultado.Fecha_Publicacion, 'DD-MON-YYYY') ||
-                         ', ID_Idioma: ' || p_IdIdioma);
+        DBMS_OUTPUT.PUT_LINE('ID_Libro: ' || v_Resultado.ID_Libro || 
+                             ', Titulo: ' || v_Resultado.Titulo_Libro ||
+                             ', Fecha_Publicacion: ' || TO_CHAR(v_Resultado.Fecha_Publicacion, 'DD-MON-YYYY') ||
+                             ', ID_Idioma: ' || p_IdIdioma);
+
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            DBMS_OUTPUT.PUT_LINE('No se encontraron libros para el idioma proporcionado.');
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+    END;
 END;
-
 EXEC SP_ObtenerLibrosPorIdioma(01);
 
 CREATE OR REPLACE PROCEDURE SP_EliminarCliente (
     p_CedulaCliente IN INT
 ) AS
 BEGIN
-    DELETE FROM TELEFONO WHERE Cedula_Cliente = p_CedulaCliente;
-    DELETE FROM CORREO WHERE Cedula_Cliente = p_CedulaCliente;
-    DELETE FROM DIRECCION WHERE Cedula_Cliente = p_CedulaCliente;
-    DELETE FROM CLIENTE WHERE Cedula_Cliente = p_CedulaCliente;
-    COMMIT;
+    BEGIN
+        DELETE FROM TELEFONO WHERE Cedula_Cliente = p_CedulaCliente;
+        DELETE FROM CORREO WHERE Cedula_Cliente = p_CedulaCliente;
+        DELETE FROM DIRECCION WHERE Cedula_Cliente = p_CedulaCliente;
+        DELETE FROM CLIENTE WHERE Cedula_Cliente = p_CedulaCliente;
+        COMMIT;
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+    END;
 END;
 EXEC SP_EliminarCliente(1111);
 
@@ -116,21 +163,29 @@ CREATE OR REPLACE PROCEDURE SP_ObtenerReservasCliente (
 ) AS
     v_Resultado RESERVA%ROWTYPE;
 BEGIN
-    SELECT *
-    INTO v_Resultado
-    FROM RESERVA
-    WHERE ID_Libro IN (
-        SELECT ID_Libro
-        FROM LIBRO
-        WHERE ID_Genero IN (
-            SELECT ID_Genero
-            FROM GENERO
-            WHERE ID_Autor = p_CedulaCliente
-        )
-    );
-    DBMS_OUTPUT.PUT_LINE('ID_Reserva: ' || v_Resultado.ID_Reserva ||
-                         ', Fecha_Reserva: ' || v_Resultado.Fecha_Reserva ||
-                         ', ID_Libro: ' || v_Resultado.ID_Libro);
+    BEGIN
+        SELECT *
+        INTO v_Resultado
+        FROM RESERVA
+        WHERE ID_Libro IN (
+            SELECT ID_Libro
+            FROM LIBRO
+            WHERE ID_Genero IN (
+                SELECT ID_Genero
+                FROM GENERO
+                WHERE ID_Autor = p_CedulaCliente
+            )
+        );
+        DBMS_OUTPUT.PUT_LINE('ID_Reserva: ' || v_Resultado.ID_Reserva ||
+                             ', Fecha_Reserva: ' || v_Resultado.Fecha_Reserva ||
+                             ', ID_Libro: ' || v_Resultado.ID_Libro);
+
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            DBMS_OUTPUT.PUT_LINE('No se encontraron reservas para el cliente.');
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+    END;
 END;
 EXEC SP_ObtenerReservasCliente(02);
 
@@ -140,10 +195,20 @@ CREATE OR REPLACE PROCEDURE SP_ActualizarDireccionCliente (
     p_NuevaDireccion IN VARCHAR2
 ) AS
 BEGIN
-    UPDATE DIRECCION
-    SET Direccion = p_NuevaDireccion
-    WHERE Cedula_Cliente = p_CedulaCliente;
-    COMMIT;
+    BEGIN
+        UPDATE DIRECCION
+        SET Direccion = p_NuevaDireccion
+        WHERE Cedula_Cliente = p_CedulaCliente;
+        COMMIT;
+
+        DBMS_OUTPUT.PUT_LINE('Dirección actualizada exitosamente.');
+
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            DBMS_OUTPUT.PUT_LINE('No se encontraron registros para actualizar.');
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+    END;
 END;
 EXEC SP_ActualizarDireccionCliente(2222,'Desamparados');
 
