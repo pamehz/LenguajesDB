@@ -73,14 +73,12 @@ END SP_CLibrosPorIdioma;
 
 CREATE OR REPLACE PROCEDURE SP_DetalleCliente(p_Cedula_Cliente IN INTEGER) AS
 BEGIN
-    -- Suponiendo que aquí se muestran los detalles completos del cliente
-    -- Se debería implementar la lógica para mostrar los detalles del cliente
+
     DBMS_OUTPUT.PUT_LINE('Detalles del cliente con Cédula: ' || p_Cedula_Cliente);
-    -- Aquí deberías llamar a otros procedimientos o realizar consultas para obtener los detalles del cliente
-    -- No se ha proporcionado la implementación detallada del procedimiento SP_DetalleCliente para este ejemplo
+    
 END SP_DetalleCliente;
 
 CREATE OR REPLACE PROCEDURE SP_CDetalleCliente(p_Cedula_Cliente IN INTEGER) AS
 BEGIN
-    SP_DetalleCliente(p_Cedula_Cliente); -- Llamada al procedimiento que muestra detalles del cliente
+    SP_DetalleCliente(p_Cedula_Cliente);
 END SP_CDetalleCliente;
