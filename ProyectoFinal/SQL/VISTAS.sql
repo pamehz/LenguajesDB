@@ -25,9 +25,8 @@ FROM
     JOIN AUTOR_NACIONALIDAD AN ON A.ID_Autor = AN.ID_Autor
     JOIN NACIONALIDAD N ON AN.ID_Nacionalidad = N.ID_Nacionalidad
 WHERE
-    A.Genero_Autor = 'Femenino';
+    A.Genero_Autor = 2;
 Select * from V_AutoresFemeninos;
-
 
 CREATE OR REPLACE VIEW V_ReservasPorCliente AS
 SELECT
@@ -43,9 +42,9 @@ SELECT
 FROM
     RESERVA R
 JOIN
-    CLIENTE C ON R.ID_Libro = L.ID_Libro
+    CLIENTE C ON R.ID_Libro = C.ID_Reserva
 JOIN
-    LIBRO L ON C.ID_Reserva = R.ID_Reserva;
+    LIBRO L ON R.ID_Libro = L.ID_Libro;
 SELECT * FROM V_ReservasPorCliente;
 
 CREATE OR REPLACE VIEW V_LibrosPorIdioma AS
@@ -59,6 +58,7 @@ JOIN
     LIBRO l ON li.ID_Libro = l.ID_Libro
 JOIN
     IDIOMA i ON li.ID_Idioma = i.ID_Idioma;
+SELECT * FROM V_LibrosPorIdioma;
 
 CREATE OR REPLACE VIEW V_AutoresPorNacionalidad AS
 SELECT
@@ -73,6 +73,8 @@ JOIN
     AUTOR_NACIONALIDAD an ON a.ID_Autor = an.ID_Autor
 JOIN
     NACIONALIDAD n ON an.ID_Nacionalidad = n.ID_Nacionalidad;
+SELECT * FROM V_AutoresPorNacionalidad;
+
 
 CREATE OR REPLACE VIEW V_ResumenGeneros AS
 SELECT
@@ -84,6 +86,7 @@ LEFT JOIN
     LIBRO l ON g.ID_Genero = l.ID_Genero
 GROUP BY
     g.Nombre_Genero;
+SELECT * FROM V_ResumenGeneros;
 
 CREATE OR REPLACE VIEW V_ClientesMenoresEdad AS
 SELECT
@@ -96,16 +99,19 @@ FROM
     CLIENTE
 WHERE
     MONTHS_BETWEEN(SYSDATE, Fecha_Nacimiento) < 216; 
+SELECT * FROM V_ClientesMenoresEdad;
 
 CREATE OR REPLACE VIEW V_ListaLibrosDisponibles AS
 SELECT *
 FROM LIBRO
 WHERE Numero_Copias > 0;
+SELECT * FROM V_ListaLibrosDisponibles;
 
 CREATE OR REPLACE VIEW V_ReservasPendientes AS
 SELECT *
 FROM RESERVA
 WHERE Fecha_Reserva > SYSDATE;
+SELECT * FROM V_ReservasPendientes;
 
 CREATE OR REPLACE VIEW V_DetalleCliente AS
 SELECT c.*, r.Fecha_Reserva, t.Numero_Telefono, co.Correo_Electronico, d.Direccion
@@ -114,7 +120,7 @@ LEFT JOIN RESERVA r ON c.ID_Reserva = r.ID_Reserva
 LEFT JOIN TELEFONO t ON c.Cedula_Cliente = t.Cedula_Cliente
 LEFT JOIN CORREO co ON c.Cedula_Cliente = co.Cedula_Cliente
 LEFT JOIN DIRECCION d ON c.Cedula_Cliente = d.Cedula_Cliente;
-
+SELECT * FROM V_DetalleCliente;
 
 
 
