@@ -278,7 +278,6 @@ BEGIN
                       FROM AUTOR
                       WHERE id_nacionalidad = (SELECT id_nacionalidad FROM NACIONALIDAD WHERE nacionalidad = p_nacionalidad))
     LOOP
-        -- Puedes hacer lo que quieras con los resultados, por ejemplo, imprimir información
         DBMS_OUTPUT.PUT_LINE('ID Autor: ' || autor_rec.id_autor || ', Apellido: ' || autor_rec.apellido1_autor);
     END LOOP;
 END;
@@ -331,35 +330,188 @@ BEGIN
     WHERE Numero_Copias > 0;
 END SP_ListarLibrosDisponibles;
 
-CREATE OR REPLACE PROCEDURE SP_ObtenerTelefonosCliente (
-    p_CedulaCliente INT
-) AS
-BEGIN
-    SELECT Numero_Telefono
-    FROM TELEFONO
-    WHERE Cedula_Cliente = p_CedulaCliente;
-END SP_ObtenerTelefonosCliente;
+/*DINAMIC*/
+CREATE OR REPLACE PROCEDURE SP_ObtenerTelefonosCliente(N1 IN INT) 
+AS
+  VSQL VARCHAR2(500); 
+  VNUMERO_TELEFONO VARCHAR2(20); 
+BEGIN 
+  VSQL := 'SELECT Numero_Telefono 
+           FROM TELEFONO T 
+           INNER JOIN CLIENTE C ON T.Cedula_Cliente = C.Cedula_Cliente 
+           WHERE C.Cedula_Cliente = :1'; 
+  FOR telefono_rec IN (EXECUTE IMMEDIATE VSQL USING N1) 
+  LOOP 
+    VNUMERO_TELEFONO := telefono_rec.Numero_Telefono; 
+    DBMS_OUTPUT.PUT_LINE('Número de Teléfono: ' || VNUMERO_TELEFONO); 
+  END LOOP; 
+END;   
+EXEC SP_ObtenerTelefonosCliente(1111); 
 
-CREATE OR REPLACE PROCEDURE SP_ListarLibrosPorFechaPublicacion AS
-BEGIN
-    SELECT *
-    FROM LIBRO
-    ORDER BY Fecha_Publicacion;
-END SP_ListarLibrosPorFechaPublicacion;
+/*DINAMIC */
+CREATE OR REPLACE PROCEDURE SP_ListarLibrosPorFechaPublicacion 
+AS 
+  VSQL VARCHAR2(500); 
+  VID NUMBER; 
+  VTITULO VARCHAR2(100); 
+  VFECHA DATE; 
+BEGIN 
+  VSQL := 'SELECT ID_Libro, Titulo_Libro, Fecha_Publicacion FROM LIBRO ORDER BY Fecha_Publicacion'; 
+  FOR LibroRecord IN (EXECUTE IMMEDIATE VSQL) 
+  LOOP 
+    VID := LibroRecord.ID_Libro; 
+    VTITULO := LibroRecord.Titulo_Libro; 
+    VFECHA := LibroRecord.Fecha_Publicacion; 
+    DBMS_OUTPUT.PUT_LINE('ID: ' || VID || ', Titulo: ' || VTITULO || ', Fecha de Publicacion: ' || TO_CHAR(VFECHA, 'DD-MON-YYYY')); 
+  END LOOP; 
+END;   
 
-CREATE OR REPLACE PROCEDURE SP_GenerarReporteReservas AS
-BEGIN
-    -- Aquí puedes implementar la lógica para generar el informe de reservas
-    NULL;
-END SP_GenerarReporteReservas;
+EXEC SP_ListarLibrosPorFechaPublicacion; 
 
-CREATE OR REPLACE PROCEDURE SP_AsignarNacionalidadAutor (
-    p_IdAutor INT,
-    p_IdNacionalidad INT
-) AS
-BEGIN
-    INSERT INTO AUTOR_NACIONALIDAD (ID_Autor, ID_Nacionalidad)
-    VALUES (p_IdAutor, p_IdNacionalidad);
-END SP_AsignarNacionalidadAutor;
+/*DINAMIC */
+
+CREATE OR REPLACE PROCEDURE SP_GenerarReporteReservas 
+AS 
+  VSQL VARCHAR2(1000); 
+BEGIN 
+  VSQL := 'SELECT R.ID_Reserva, 
+                    R.Fecha_Reserva, 
+                    L.Titulo_Libro, 
+                    C.Nombre_Cliente, 
+                    C.Apellido_Paterno, 
+                    C.Apellido_Materno 
+             FROM RESERVA R 
+                  JOIN LIBRO L ON R.ID_Libro = L.ID_Libro 
+                  JOIN CLIENTE C ON R.ID_Reserva = C.ID_Reserva'; 
+
+  FOR reserva_rec IN (EXECUTE IMMEDIATE VSQL) 
+  LOOP 
+    DBMS_OUTPUT.PUT_LINE('ID_Reserva: ' || reserva_rec.ID_Reserva || 
+                         ' Fecha_Reserva: ' || reserva_rec.Fecha_Reserva || 
+                         ' Título del Libro: ' || reserva_rec.Titulo_Libro || 
+                         ' Nombre del Cliente: ' || reserva_rec.Nombre_Cliente || 
+                         ' Apellido Paterno: ' || reserva_rec.Apellido_Paterno || 
+                         ' Apellido Materno: ' || reserva_rec.Apellido_Materno); 
+  END LOOP; 
+END; 
+EXEC SP_GenerarReporteReservas; 
 
 
+/*DINAMIC */
+CREATE OR REPLACE PROCEDURE SP_ActualizarNacionalidad( 
+    ID_AUTOR IN INT, 
+    ID_NAC IN INT 
+) 
+AS 
+  VSQL VARCHAR2(500); 
+BEGIN 
+    VSQL := 'UPDATE AUTOR_NACIONALIDAD 
+             SET ID_Nacionalidad = :1 
+             WHERE ID_Autor = :2';  
+    EXECUTE IMMEDIATE VSQL USING ID_NAC, ID_AUTOR;  
+    DBMS_OUTPUT.PUT_LINE('Se actualizó la nacionalidad del autor con ID ' || ID_AUTOR || ' a ' || ID_NAC); 
+END; 
+
+EXEC SP_ActualizarNacionalidad(1, 2);  
+
+/*DINAMIC */
+CREATE OR REPLACE PROCEDURE SP_ActualizarCorreoCliente ( 
+    CedCli IN NUMBER, 
+    NuevCorr   IN VARCHAR2 
+) 
+AS 
+  VSQL VARCHAR2(500); 
+BEGIN 
+  VSQL := 'UPDATE CORREO 
+           SET Correo_Electronico = :nuevCorr 
+           WHERE Cedula_Cliente = :cedCli'; 
+  EXECUTE IMMEDIATE VSQL USING NuevCorr, CedCli; 
+  DBMS_OUTPUT.PUT_LINE('Correo electrónico actualizado correctamente para el cliente con cédula ' || CedCli); 
+END;  
+
+EXEC SP_ActualizarCorreoCliente(1111, 'belgic@example.com'); 
+
+/**/
+CREATE OR REPLACE PROCEDURE SP_ListarLibrosPorAutor 
+AS 
+BEGIN 
+    FOR LibroRecord IN ( 
+        SELECT  
+            L.ID_Libro,  
+            L.Titulo_Libro,  
+            L.Fecha_Publicacion, 
+            A.Nombre_Autor || ' ' || A.Apellido1_Autor || ' ' || A.Apellido2_Autor AS Autor 
+        FROM  
+            LIBRO L 
+        INNER JOIN  
+            GENERO G ON L.ID_Genero = G.ID_Genero 
+        INNER JOIN  
+            AUTOR A ON G.ID_Autor = A.ID_Autor 
+        ORDER BY  
+            A.Nombre_Autor, L.Fecha_Publicacion 
+    ) 
+    LOOP 
+        DBMS_OUTPUT.PUT_LINE('ID: ' || LibroRecord.ID_Libro ||  
+
+                             ', Titulo: ' || LibroRecord.Titulo_Libro ||  
+
+                             ', Autor: ' || LibroRecord.Autor ||  
+
+                             ', Fecha de Publicacion: ' || TO_CHAR(LibroRecord.Fecha_Publicacion, 'DD-MON-YYYY')); 
+    END LOOP; 
+END; 
+
+/**/
+CREATE OR REPLACE PROCEDURE SP_ListarLibrosPorAutor 
+AS 
+BEGIN 
+    FOR LibroRecord IN ( 
+        SELECT  
+            L.ID_Libro,  
+            L.Titulo_Libro,  
+            L.Fecha_Publicacion, 
+            A.Nombre_Autor || ' ' || A.Apellido1_Autor || ' ' || A.Apellido2_Autor AS Autor 
+        FROM  
+            LIBRO L 
+        INNER JOIN  
+            GENERO G ON L.ID_Genero = G.ID_Genero 
+        INNER JOIN  
+            AUTOR A ON G.ID_Autor = A.ID_Autor 
+        ORDER BY  
+            A.Nombre_Autor, L.Fecha_Publicacion 
+    ) 
+    LOOP 
+        DBMS_OUTPUT.PUT_LINE('ID: ' || LibroRecord.ID_Libro ||  
+                             ', Titulo: ' || LibroRecord.Titulo_Libro ||  
+                             ', Autor: ' || LibroRecord.Autor ||  
+                             ', Fecha de Publicacion: ' || TO_CHAR(LibroRecord.Fecha_Publicacion, 'DD-MON-YYYY')); 
+
+    END LOOP; 
+
+END; 
+EXEC SP_ListarLibrosPorAutor; 
+
+//////// 
+CREATE OR REPLACE PROCEDURE SP_ObtenerNacionalidades 
+AS 
+BEGIN 
+    FOR NacRecord IN (SELECT ID_Nacionalidad, Nacionalidad FROM NACIONALIDAD ORDER BY ID_Nacionalidad) 
+    LOOP 
+        DBMS_OUTPUT.PUT_LINE('ID Nacionalidad: ' || NacRecord.ID_Nacionalidad || ', Nacionalidad: ' || NacRecord.Nacionalidad); 
+    END LOOP; 
+END; 
+
+EXEC SP_ObtenerNacionalidades; 
+
+//////// 
+
+CREATE OR REPLACE PROCEDURE SP_EliminarLibro(p_ID_Libro IN INT) 
+AS 
+BEGIN 
+    DELETE FROM LIBRO 
+    WHERE ID_Libro = p_ID_Libro;     
+
+    DBMS_OUTPUT.PUT_LINE('Libro eliminado exitosamente.'); 
+
+END; 
+EXEC SP_EliminarLibro(1); 
