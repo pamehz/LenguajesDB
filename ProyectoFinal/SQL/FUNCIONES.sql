@@ -19,6 +19,13 @@ BEGIN
 END;
 SELECT GeneroFavoritoCliente(11111) FROM CLIENTES;
 
+CREATE OR REPLACE FUNCTION FN_TotalLibros RETURN INT IS
+    v_TotalLibros INT;
+BEGIN
+    SELECT COUNT(*) INTO v_TotalLibros FROM LIBRO;
+    RETURN v_TotalLibros;
+END FN_TotalLibros;
+
 
 CREATE OR REPLACE FUNCTION FN_CantidadLibrosPorIdioma(ID_Idioma IN NUMBER)
 RETURN NUMBER
