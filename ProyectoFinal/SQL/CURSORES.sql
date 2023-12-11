@@ -1,114 +1,274 @@
-CREATE OR REPLACE PROCEDURE CUR_LibrosPorGenero (
-    p_IdGenero INT,
-    p_Cursor OUT SYS_REFCURSOR
-) AS
+SELECT * FROM GENERO
+CREATE OR REPLACE PROCEDURE CUR_LibrosPorGenero(p_NombreGenero IN VARCHAR2)
+AS
+  CURSOR LibrosCursor IS
+    SELECT L.ID_Libro, L.Titulo_Libro, L.Fecha_Publicacion
+    FROM LIBRO L
+    INNER JOIN GENERO G ON L.ID_Genero = G.ID_Genero
+    WHERE G.Nombre_Genero = p_NombreGenero
+    ORDER BY L.Fecha_Publicacion;
+
+  VID_LIBRO INT;
+  VTIPO_LIBRO VARCHAR2(90);
+  VFECHA_PUBLICACION DATE;
+
 BEGIN
-    OPEN p_Cursor FOR
-    SELECT Titulo_Libro
-    FROM LIBRO
-    WHERE ID_Genero = p_IdGenero;
+  OPEN LibrosCursor;
+
+  LOOP
+    FETCH LibrosCursor INTO VID_LIBRO, VTIPO_LIBRO, VFECHA_PUBLICACION;
+    EXIT WHEN LibrosCursor%NOTFOUND;
+    DBMS_OUTPUT.PUT_LINE('ID: ' || VID_LIBRO || ' Título: ' || VTIPO_LIBRO || ' Fecha de publicación: ' || VFECHA_PUBLICACION);
+  END LOOP;
+
+  CLOSE LibrosCursor;
 END CUR_LibrosPorGenero;
+EXEC CUR_LibrosPorGenero('Romance');
 
-CREATE OR REPLACE PROCEDURE CUR_AutoresNacionalidad (
-    p_Cursor OUT SYS_REFCURSOR
-) AS
-BEGIN
-    OPEN p_Cursor FOR
-    SELECT a.ID_Autor, a.Nombre_Autor, a.Apellido1_Autor, a.Apellido2_Autor, n.Nacionalidad
-    FROM AUTOR a
-    JOIN AUTOR_NACIONALIDAD an ON a.ID_Autor = an.ID_Autor
-    JOIN NACIONALIDAD n ON an.ID_Nacionalidad = n.ID_Nacionalidad;
-END CUR_AutoresNacionalidad;
+/////////
+CREATE OR REPLACE PROCEDURE CUR_LibrosDisponibles 
+AS 
+  CURSOR LibrosCursor IS 
+    SELECT L.ID_Libro, L.Titulo_Libro, L.Fecha_Publicacion
+    FROM LIBRO L
+    LEFT JOIN RESERVA R ON L.ID_Libro = R.ID_Libro
+    WHERE R.ID_Libro IS NULL
+    ORDER BY L.Fecha_Publicacion; 
 
-CREATE OR REPLACE PROCEDURE CUR_LibrosDisponibles (
-    p_Cursor OUT SYS_REFCURSOR
-) AS
-BEGIN
-    OPEN p_Cursor FOR
-    SELECT Titulo_Libro
+  VID_LIBRO INT; 
+  VTIPO_LIBRO VARCHAR2(90); 
+  VFECHA_PUBLICACION DATE; 
+
+BEGIN 
+  OPEN LibrosCursor;
+   
+  LOOP 
+    FETCH LibrosCursor INTO VID_LIBRO, VTIPO_LIBRO, VFECHA_PUBLICACION; 
+    EXIT WHEN LibrosCursor%NOTFOUND; 
+    DBMS_OUTPUT.PUT_LINE('ID: ' || VID_LIBRO || ' Título: ' || VTIPO_LIBRO || ' Fecha de publicación: ' || VFECHA_PUBLICACION); 
+  END LOOP;   
+
+  CLOSE LibrosCursor; 
+END; 
+EXEC CUR_LIBROSDISPONIBLES;
+
+//////////
+CREATE OR REPLACE PROCEDURE CUR_GenerosLibros 
+AS 
+  CURSOR GenerosCursor IS 
+    SELECT DISTINCT G.Nombre_Genero
+    FROM GENERO G
+    ORDER BY G.Nombre_Genero;
+
+  VGenero VARCHAR2(20); 
+
+BEGIN 
+  OPEN GenerosCursor;
+   
+  LOOP 
+    FETCH GenerosCursor INTO VGenero; 
+    EXIT WHEN GenerosCursor%NOTFOUND; 
+    DBMS_OUTPUT.PUT_LINE('Género: ' || VGenero); 
+  END LOOP;   
+
+  CLOSE GenerosCursor; 
+END; 
+EXEC CUR_GenerosLibros;
+
+
+/////////////
+CREATE OR REPLACE PROCEDURE CUR_LibrosPorFechaPublicacion 
+AS 
+  CURSOR LibrosCursor IS 
+    SELECT L.ID_Libro, L.Titulo_Libro, L.Fecha_Publicacion, A.Nombre_Autor, G.Nombre_Genero
+    FROM LIBRO L
+    JOIN GENERO G ON L.ID_Genero = G.ID_Genero
+    JOIN AUTOR A ON G.ID_Autor = A.ID_Autor
+    ORDER BY L.Fecha_Publicacion; 
+
+  VID_LIBRO INT; 
+  VTIPO_LIBRO VARCHAR2(90); 
+  VFECHA_PUBLICACION DATE; 
+  VAUTOR VARCHAR2(60); 
+  VGENERO VARCHAR2(20); 
+
+BEGIN 
+  OPEN LibrosCursor;
+   
+  LOOP 
+    FETCH LibrosCursor INTO VID_LIBRO, VTIPO_LIBRO, VFECHA_PUBLICACION, VAUTOR, VGENERO; 
+    EXIT WHEN LibrosCursor%NOTFOUND; 
+    DBMS_OUTPUT.PUT_LINE('ID: ' || VID_LIBRO || 
+                         ', Título: ' || VTIPO_LIBRO || 
+                         ', Autor: ' || VAUTOR || 
+                         ', Género: ' || VGENERO ||
+                         ', Fecha de publicación: ' || VFECHA_PUBLICACION); 
+  END LOOP;   
+
+  CLOSE LibrosCursor; 
+END CUR_LibrosPorFechaPublicacion;
+
+EXEC CUR_LibrosPorFechaPublicacion;
+///////
+CREATE OR REPLACE PROCEDURE CUR_ListarLibros AS
+  CURSOR LibrosCursor IS
+    SELECT ID_Libro, Titulo_Libro, Fecha_Publicacion
     FROM LIBRO
-    WHERE Numero_Copias > 0;
-END CUR_LibrosDisponibles;
+    ORDER BY Fecha_Publicacion;
 
-CREATE OR REPLACE PROCEDURE CUR_GenerosLiterarios (
-    p_Cursor OUT SYS_REFCURSOR
-) AS
-BEGIN
-    OPEN p_Cursor FOR
-    SELECT DISTINCT Nombre_Genero
-    FROM GENERO;
-END CUR_GenerosLiterarios;
+  VID_LIBRO INT;
+  VTIPO_LIBRO VARCHAR2(90);
+  VFECHA_PUBLICACION DATE;
 
-CREATE OR REPLACE PROCEDURE CUR_AutoresMasProductivos (
-    p_Cursor OUT SYS_REFCURSOR
-) AS
 BEGIN
-    OPEN p_Cursor FOR
-    SELECT a.ID_Autor, a.Nombre_Autor, a.Apellido1_Autor, a.Apellido2_Autor, COUNT(l.ID_Libro) AS CantidadLibros
-    FROM AUTOR a
-    JOIN GENERO g ON a.ID_Autor = g.ID_Autor
-    JOIN LIBRO l ON g.ID_Genero = l.ID_Genero
-    GROUP BY a.ID_Autor, a.Nombre_Autor, a.Apellido1_Autor, a.Apellido2_Autor
-    ORDER BY CantidadLibros DESC;
-END CUR_AutoresMasProductivos;
+  OPEN LibrosCursor;
 
-CREATE OR REPLACE PROCEDURE CUR_ListaLibros (
-    p_Cursor OUT SYS_REFCURSOR
-) AS
-BEGIN
-    OPEN p_Cursor FOR
-    SELECT *
-    FROM LIBRO;
-END CUR_ListaLibros;
+  LOOP
+    FETCH LibrosCursor INTO VID_LIBRO, VTIPO_LIBRO, VFECHA_PUBLICACION;
+    EXIT WHEN LibrosCursor%NOTFOUND;
+    DBMS_OUTPUT.PUT_LINE('ID: ' || VID_LIBRO || ' Título: ' || VTIPO_LIBRO || ' Fecha de publicación: ' || VFECHA_PUBLICACION);
+  END LOOP;
 
-CREATE OR REPLACE PROCEDURE CUR_AutoresPorGenero (
-    p_IdGenero INT,
-    p_Cursor OUT SYS_REFCURSOR
-) AS
-BEGIN
-    OPEN p_Cursor FOR
-    SELECT a.ID_Autor, a.Nombre_Autor, a.Apellido1_Autor, a.Apellido2_Autor
-    FROM AUTOR a
-    JOIN GENERO g ON a.ID_Autor = g.ID_Autor
-    WHERE g.ID_Genero = p_IdGenero;
-END CUR_AutoresPorGenero;
+  CLOSE LibrosCursor;
+END CUR_ListarLibros;
+EXEC CUR_ListarLibros;
+/////////////////
+CREATE OR REPLACE PROCEDURE CUR_AutoresPorGenero(p_GeneroID IN INT) 
+AS 
+  CURSOR AutoresCursor IS 
+    SELECT A.ID_Autor, A.Nombre_Autor, A.Apellido1_Autor, A.Apellido2_Autor
+    FROM AUTOR A
+    INNER JOIN GENERO G ON A.ID_Autor = G.ID_Autor
+    WHERE G.ID_Genero = p_GeneroID;
+  
+  VIDAUTOR INT;
+  VNombre_Autor VARCHAR2(20);
+  VApellido1_Autor VARCHAR2(20);
+  VApellido2_Autor VARCHAR2(20);
+  
+BEGIN 
+  OPEN AutoresCursor;
+   
+  LOOP 
+    FETCH AutoresCursor INTO VIDAUTOR, VNombre_Autor, VApellido1_Autor, VApellido2_Autor; 
+    EXIT WHEN AutoresCursor%NOTFOUND; 
+    DBMS_OUTPUT.PUT_LINE('ID Autor: ' || VIDAUTOR || ', Nombre: ' || VNombre_Autor || 
+                         ', Apellido1: ' || VApellido1_Autor || ', Apellido2: ' || VApellido2_Autor);
+  END LOOP;   
 
-CREATE OR REPLACE PROCEDURE CUR_ReservasCliente (
-    p_CedulaCliente INT,
-    p_Cursor OUT SYS_REFCURSOR
-) AS
+  CLOSE AutoresCursor; 
+END;
+EXEC CUR_AutoresPorGenero(01);
+//////////////////
+CREATE OR REPLACE PROCEDURE CUR_ReservasCliente(p_CedulaCliente IN NUMBER) AS
+  CURSOR ReservasCursor IS
+    SELECT R.ID_Reserva, R.Fecha_Reserva, L.Titulo_Libro
+    FROM RESERVA R
+    JOIN LIBRO L ON R.ID_Libro = L.ID_Libro
+    JOIN CLIENTE C ON R.ID_Reserva = C.ID_Reserva
+    WHERE C.Cedula_Cliente = p_CedulaCliente;
+
+  VID_RESERVA INT;
+  VFECHA_RESERVA DATE;
+  VTITULO_LIBRO VARCHAR2(90);
 BEGIN
-    OPEN p_Cursor FOR
-    SELECT *
-    FROM RESERVA
-    WHERE ID_Reserva IN (SELECT ID_Reserva FROM CLIENTE WHERE Cedula_Cliente = p_CedulaCliente);
+  OPEN ReservasCursor;
+
+  LOOP
+    FETCH ReservasCursor INTO VID_RESERVA, VFECHA_RESERVA, VTITULO_LIBRO;
+    EXIT WHEN ReservasCursor%NOTFOUND;
+    DBMS_OUTPUT.PUT_LINE('ID Reserva: ' || VID_RESERVA || ', Fecha: ' ||
+                         TO_CHAR(VFECHA_RESERVA, 'DD-MON-YYYY') || ', Título: ' ||
+                         VTITULO_LIBRO);
+  END LOOP;
+
+  CLOSE ReservasCursor;
 END CUR_ReservasCliente;
+EXEC CUR_ReservasCliente(1111);
 
-CREATE OR REPLACE PROCEDURE CUR_LibrosPorIdioma (
-    p_IdIdioma INT,
-    p_Cursor OUT SYS_REFCURSOR
-) AS
+
+/**/
+CREATE OR REPLACE PROCEDURE CUR_LibrosPorIdioma(p_IdiomaId IN INT) AS
+  CURSOR LibrosCursor IS
+    SELECT L.ID_Libro, L.Titulo_Libro, L.Fecha_Publicacion
+    FROM LIBRO L
+    JOIN LIBRO_IDIOMA LI ON L.ID_Libro = LI.ID_Libro
+    JOIN IDIOMA I ON LI.ID_Idioma = I.ID_Idioma
+    WHERE I.ID_Idioma = p_IdiomaId
+    ORDER BY L.Fecha_Publicacion;
+
+  v_ID_Libro LIBRO.ID_LIBRO%TYPE;
+  v_Titulo_Libro LIBRO.TITULO_LIBRO%TYPE;
+  v_Fecha_Publicacion LIBRO.FECHA_PUBLICACION%TYPE;
 BEGIN
-    OPEN p_Cursor FOR
-    SELECT l.ID_Libro, l.Titulo_Libro, i.Nombre_Idioma
-    FROM LIBRO l
-    JOIN LIBRO_IDIOMA li ON l.ID_Libro = li.ID_Libro
-    JOIN IDIOMA i ON li.ID_Idioma = i.ID_Idioma
-    WHERE i.ID_Idioma = p_IdIdioma;
+  OPEN LibrosCursor;
+
+  LOOP
+    FETCH LibrosCursor INTO v_ID_Libro, v_Titulo_Libro, v_Fecha_Publicacion;
+    EXIT WHEN LibrosCursor%NOTFOUND;
+
+    DBMS_OUTPUT.PUT_LINE('ID: ' || v_ID_Libro || ', Título: ' || v_Titulo_Libro || ', Fecha de publicación: ' || v_Fecha_Publicacion);
+  END LOOP;
+
+  CLOSE LibrosCursor;
 END CUR_LibrosPorIdioma;
+EXEC CUR_LibrosPorIdioma(01);
 
-CREATE OR REPLACE PROCEDURE CUR_DetalleCliente (
-    p_CedulaCliente INT,
-    p_Cursor OUT SYS_REFCURSOR
-) AS
+/**/
+CREATE OR REPLACE PROCEDURE CUR_DetalleCliente AS
+  CURSOR DetalleClienteCursor IS
+    SELECT
+      C.Cedula_Cliente,
+      C.Nombre_Cliente,
+      C.Apellido_Paterno,
+      C.Apellido_Materno,
+      C.Fecha_Nacimiento,
+      D.Direccion,
+      T.Numero_Telefono,
+      CO.Correo_Electronico
+    FROM CLIENTE C
+    LEFT JOIN DIRECCION D ON C.Cedula_Cliente = D.Cedula_Cliente
+    LEFT JOIN TELEFONO T ON C.Cedula_Cliente = T.Cedula_Cliente
+    LEFT JOIN CORREO CO ON C.Cedula_Cliente = CO.Cedula_Cliente;
+  
+  v_Cedula_Cliente CLIENTE.Cedula_Cliente%TYPE;
+  v_Nombre_Cliente CLIENTE.Nombre_Cliente%TYPE;
+  v_Apellido_Paterno CLIENTE.Apellido_Paterno%TYPE;
+  v_Apellido_Materno CLIENTE.Apellido_Materno%TYPE;
+  v_Fecha_Nacimiento CLIENTE.Fecha_Nacimiento%TYPE;
+  v_Direccion DIRECCION.Direccion%TYPE;
+  v_Numero_Telefono TELEFONO.Numero_Telefono%TYPE;
+  v_Correo_Electronico CORREO.Correo_Electronico%TYPE;
 BEGIN
-    OPEN p_Cursor FOR
-    SELECT *
-    FROM CLIENTE
-    WHERE Cedula_Cliente = p_CedulaCliente;
-END CUR_DetalleCliente;
+  OPEN DetalleClienteCursor;
+  
+  LOOP
+    FETCH DetalleClienteCursor INTO
+      v_Cedula_Cliente,
+      v_Nombre_Cliente,
+      v_Apellido_Paterno,
+      v_Apellido_Materno,
+      v_Fecha_Nacimiento,
+      v_Direccion,
+      v_Numero_Telefono,
+      v_Correo_Electronico;
+    
+    EXIT WHEN DetalleClienteCursor%NOTFOUND;
+    
+    DBMS_OUTPUT.PUT_LINE('Cedula: ' || v_Cedula_Cliente ||
+                         ', Nombre: ' || v_Nombre_Cliente ||
+                         ', Apellido Paterno: ' || v_Apellido_Paterno ||
+                         ', Apellido Materno: ' || v_Apellido_Materno ||
+                         ', Fecha de Nacimiento: ' || TO_CHAR(v_Fecha_Nacimiento, 'DD-MON-YYYY') ||
+                         ', Direccion: ' || v_Direccion ||
+                         ', Telefono: ' || v_Numero_Telefono ||
+                         ', Correo Electronico: ' || v_Correo_Electronico);
+  END LOOP;
 
-
+  CLOSE DetalleClienteCursor;
+END ;
+EXEC CUR_DetalleCliente;
+//////////////
 CREATE OR REPLACE PROCEDURE CUR_LibrosPorFechaPublicacion 
 AS 
   CURSOR LibrosCursor IS 
@@ -133,11 +293,9 @@ BEGIN
 
   CLOSE LibrosCursor; 
 END; 
-
 EXEC CUR_LibrosPorFechaPublicacion; 
 
 ///////////// 
-
 CREATE OR REPLACE PROCEDURE CUR_ReservasPorFecha 
 AS 
   CURSOR ReservasCursor IS 
@@ -161,11 +319,9 @@ BEGIN
 
   CLOSE ReservasCursor; 
 END; 
-
 EXEC CUR_ReservasPorFecha; 
 
-////////// 
-
+//////////
 CREATE OR REPLACE PROCEDURE CUR_LibrosPorAutor 
 AS 
   CURSOR LibrosPorAutor IS 
@@ -193,35 +349,4 @@ BEGIN
 
   CLOSE LibrosPorAutor; 
 END; 
-
 EXEC CUR_LibrosPorAutor; 
-
-/////////// 
-  
-CREATE OR REPLACE PROCEDURE CUR_ClientesPorEdad 
-AS 
-  CURSOR ClientesPorEdad IS 
-    SELECT Cedula_Cliente, Nombre_Cliente, Edad 
-    FROM CLIENTE 
-    ORDER BY Edad;  
-
-  VCedula_Cliente INT; 
-  VNombre_Cliente VARCHAR2(30); 
-  VEdad INT;  
-
-BEGIN 
-  OPEN ClientesPorEdad; 
-
-  LOOP 
-
-    FETCH ClientesPorEdad INTO VCedula_Cliente, VNombre_Cliente, VEdad; 
-    EXIT WHEN ClientesPorEdad%NOTFOUND; 
-    DBMS_OUTPUT.PUT_LINE('Cedula: ' || VCedula_Cliente || ', Nombre: ' || VNombre_Cliente || ', Edad: ' || VEdad); 
-
-  END LOOP; 
-
-  CLOSE ClientesPorEdad; 
-END;  
-
-EXEC CUR_ClientesPorEdad; 
-

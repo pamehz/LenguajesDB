@@ -10,8 +10,8 @@ BEGIN
     SP_ListaCompletaLibros; 
 END SP_ListaLibros;
 
-
-
+EXEC SP_ListaLibros();
+/**/
 CREATE OR REPLACE PROCEDURE SP_AutoresPorGenero AS
 BEGIN
     FOR autor IN (
@@ -29,19 +29,24 @@ BEGIN
     SP_AutoresPorGenero; 
 END SP_CAutoresPorGenero;
 
+EXEC SP_CAutoresPorGenero();
 
-
-CREATE OR REPLACE PROCEDURE SP_ReservasPorCliente(p_ID_Cliente IN INTEGER) AS
+/**/
+SELECT * FROM RESERVA
+CREATE OR REPLACE PROCEDURE SP_ReservasPorCliente(p_ID_Cliente IN INT) AS
 BEGIN
-    FOR reserva IN (
-        SELECT R.ID_Reserva, R.Fecha_Reserva, L.Titulo_Libro
-        FROM RESERVA R
-        JOIN LIBRO L ON R.ID_Libro = L.ID_Libro
-        WHERE R.ID_Cliente = p_ID_Cliente
-    ) LOOP
-        DBMS_OUTPUT.PUT_LINE('ID Reserva: ' || reserva.ID_Reserva || ', Fecha: ' ||
-                             TO_CHAR(reserva.Fecha_Reserva, 'DD-MON-YYYY') || ', Título: ' ||
-                             reserva.Titulo_Libro);
+    FOR reserva_rec IN (
+        SELECT R.ID_Reserva, R.Fecha_Reserva, L.Titulo_Libro, C.Nombre_Cliente, C.Apellido_Paterno, C.Apellido_Materno
+FROM RESERVA R
+JOIN LIBRO L ON R.ID_Libro = L.ID_Libro
+JOIN CLIENTE C ON R.ID_Reserva = C.ID_Reserva
+WHERE C.Cedula_Cliente = p_ID_Cliente
+
+    ) 
+    LOOP
+        DBMS_OUTPUT.PUT_LINE('ID Reserva: ' || reserva_rec.ID_Reserva || ', Fecha: ' ||
+                             TO_CHAR(reserva_rec.Fecha_Reserva, 'DD-MON-YYYY') || ', Título: ' ||
+                             reserva_rec.Titulo_Libro);
     END LOOP;
 END SP_ReservasPorCliente;
 
@@ -50,15 +55,18 @@ BEGIN
     SP_ReservasPorCliente(p_ID_Cliente);
 END SP_ReservasCliente;
 
+EXEC SP_ReservasCliente(1111);
 
-
+/**/
 CREATE OR REPLACE PROCEDURE SP_LibrosPorIdioma(p_ID_Idioma IN INTEGER) AS
 BEGIN
     FOR libro_idioma IN (
-        SELECT LI.ID_Libro, LI.Titulo_Libro
-        FROM LIBRO_IDIOMA LI
-        JOIN LIBRO L ON LI.ID_Libro = L.ID_Libro
-        WHERE LI.ID_Idioma = p_ID_Idioma
+        SELECT LI.ID_Libro, L.Titulo_Libro, I.Nombre_Idioma
+FROM LIBRO_IDIOMA LI
+JOIN LIBRO L ON LI.ID_Libro = L.ID_Libro
+JOIN IDIOMA I ON LI.ID_Idioma = I.ID_Idioma
+WHERE LI.ID_Idioma = p_ID_Idioma
+
     ) LOOP
         DBMS_OUTPUT.PUT_LINE('ID Libro: ' || libro_idioma.ID_Libro || ', Título: ' || libro_idioma.Titulo_Libro);
     END LOOP;
@@ -69,16 +77,4 @@ BEGIN
     SP_LibrosPorIdioma(p_ID_Idioma); 
 END SP_CLibrosPorIdioma;
 
-
-
-CREATE OR REPLACE PROCEDURE SP_DetalleCliente(p_Cedula_Cliente IN INTEGER) AS
-BEGIN
-
-    DBMS_OUTPUT.PUT_LINE('Detalles del cliente con Cédula: ' || p_Cedula_Cliente);
-    
-END SP_DetalleCliente;
-
-CREATE OR REPLACE PROCEDURE SP_CDetalleCliente(p_Cedula_Cliente IN INTEGER) AS
-BEGIN
-    SP_DetalleCliente(p_Cedula_Cliente);
-END SP_CDetalleCliente;
+EXEC SP_CLibrosPorIdioma(1);
